@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "High-Performance Log Analysis";
+}
+
+<header class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">High-Performance Security Log Parser</h1>
+        <p class="lead col-lg-8 mx-auto text-light opacity-75">
+            Stream and analyze millions of raw HTTP access logs in real-time. Detect SQL injection, XSS attempts, and brute-force spikes with zero-allocation C# memory parsing.
+        </p>
+        <div class="mt-4">
+            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg me-2">Get Started</a>
+            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-lg">Live Demo Login</a>
+        </div>
+    </div>
+</header>
+
+<section id="features" class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Key Project Features</h2>
+            <p class="text-muted">Designed for high-throughput threat detection without overwhelming server RAM.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4">
+                    <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <h5 class="fw-bold">Zero-Allocation Parsing</h5>
+                    <p class="text-muted small">Utilizes C# <code>ReadOnlySpan&lt;char&gt;</code> to parse text without instantiating string objects for every log entry.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4">
+                    <div class="feature-icon"><i class="fa-solid fa-satellite-dish"></i></div>
+                    <h5 class="fw-bold">Real-Time Telemetry</h5>
+                    <p class="text-muted small">Integrated with ASP.NET Core SignalR WebSockets to stream processing progress and anomaly alerts live.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4">
+                    <div class="feature-icon"><i class="fa-solid fa-user-shield"></i></div>
+                    <h5 class="fw-bold">Threat Pattern Matching</h5>
+                    <p class="text-muted small">Automated inspection for suspicious URI parameters, SQL injection vectors, and aggregated HTTP 401 login spikes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
