@@ -1,6 +1,6 @@
+using System.Diagnostics;
 using LogDetector.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace LogDetector.Controllers
 {

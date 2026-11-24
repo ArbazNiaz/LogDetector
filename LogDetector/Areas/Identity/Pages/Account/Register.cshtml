@@ -12,18 +12,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-            body {
-                background-color: #f8fafc;
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh;
-            }
-
-            .signup-card {
-                max-width: 520px;
-                width: 100%;
-                margin: auto;
-            }
+        body { background-color: #f8fafc; display: flex; flex-direction: column; min-height: 100vh; }
+        .signup-card { max-width: 520px; width: 100%; margin: auto; }
     </style>
 </head>
 <body>
@@ -44,7 +34,7 @@
             <div class="card-body p-4">
                 <div class="text-center mb-4">
                     <h4 class="fw-bold">Create Account</h4>
-                    <p class="text-muted small">Register to upload log files and monitor background execution</p>
+                    <p class="text-muted small">Register as an Administrator or Log Analysis Viewer</p>
                 </div>
 
                 <form method="post">
@@ -58,22 +48,22 @@
                         </div>
                         <div class="col-md-6">
                             <label asp-for="Input.LastName" class="form-label small fw-semibold"></label>
-                            <input asp-for="Input.LastName" class="form-control" placeholder="Khan" />
+                            <input asp-for="Input.LastName" class="form-control" placeholder="Niaz" />
                             <span asp-validation-for="Input.LastName" class="text-danger small"></span>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="Input.Email" class="form-label small fw-semibold"></label>
-                        <input asp-for="Input.Email" class="form-control" placeholder="student@university.edu" />
+                        <input asp-for="Input.Email" class="form-control" placeholder="analyst@logdetective.local" />
                         <span asp-validation-for="Input.Email" class="text-danger small"></span>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="Input.Role" class="form-label small fw-semibold"></label>
                         <select asp-for="Input.Role" class="form-select">
-                            <option value="Admin">Security Analyst / Administrator</option>
-                            <option value="Worker">Background Worker (System Service)</option>
+                            <option value="Admin">Security Administrator (Full Access: Upload, Manage &amp; View)</option>
+                            <option value="Viewer">Log Monitor / Viewer (Read-Only Analysis View)</option>
                         </select>
                         <span asp-validation-for="Input.Role" class="text-danger small"></span>
                     </div>

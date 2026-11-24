@@ -1,11 +1,12 @@
 global using LogDetector.Models;
 using LogDetector.Data;
-using LogDetector.Models;
+using LogDetector.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. EF Core DbContext (Identity + Domain Schema Migrations)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
@@ -14,7 +15,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Change IdentityUser -> ApplicationUser and add .AddRoles<IdentityRole>()
+// 2. Dapper Connection Factory & 4 Repository Interfaces (Dependency Injection)
+builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddScoped<ILogBatchRepository, LogBatchRepository>();
+builder.Services.AddScoped<IThreatLogRepository, ThreatLogRepository>();
+builder.Services.AddScoped<IBlockedIpRepository, BlockedIpRepository>();
+builder.Services.AddScoped<IWorkerTelemetryRepository, WorkerTelemetryRepository>();
+
+// 3. Customized ASP.NET Core Identity + Roles ("Admin" & "Viewer")
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -33,7 +41,7 @@ builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// 3. Ensure Database Schema Exists on Startup
+// 4. Apply Pending EF Core Migrations Automatically on Startup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -45,7 +53,7 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while initializing the database.");
+        logger.LogError(ex, "An error occurred while migrating the database.");
     }
 }
 

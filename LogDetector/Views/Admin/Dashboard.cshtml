@@ -1,291 +1,393 @@
-﻿@{
-    Layout = null;
-    string fullName = ViewBag.FullName as string ?? "Arbaz Khan";
-    string encodedName = Uri.EscapeDataString(fullName);
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Admin Panel";
+    string fullName = ViewBag.FullName as string ?? "Security Admin";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogDetective - Security Analyst Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@section Styles {
     <style>
-            body { background-color: #f1f5f9; }
-            .sidebar { min-height: calc(100vh - 56px); background-color: #0f172a; }
-            .nav-link.active { background-color: #1e293b; font-weight: 600; border-left: 4px solid #0d6efd; }
-            .stat-card { border-radius: 8px; }
-            .upload-zone { border: 2px dashed #cbd5e1; border-radius: 8px; background-color: #ffffff; cursor: pointer; transition: 0.2s; }
-            .upload-zone:hover { border-color: #0d6efd; background-color: #f8fafc; }
+        body { background-color: #f1f5f9; }
+        .stat-card { border-radius: 8px; }
+        .upload-zone { border: 2px dashed #cbd5e1; border-radius: 8px; background-color: #ffffff; cursor: pointer; transition: 0.2s; }
+        .upload-zone:hover { border-color: #0d6efd; background-color: #f8fafc; }
     </style>
-</head>
-<body>
+}
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold me-4" asp-controller="Home" asp-action="Index">
-                <i class="fa-solid fa-shield-halved text-primary me-2"></i>LogDetective <span class="badge bg-secondary fs-6 ms-2">Analyst Portal</span>
-            </a>
-            <div class="ms-auto d-flex align-items-center">
-                <div class="dropdown">
-                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown">
-                        <img src="https://ui-avatars.com/api/?name=@encodedName&background=0D6EFD&color=fff" alt="User" width="32" height="32" class="rounded-circle me-2">
-                        <span>@fullName</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li><a class="dropdown-item" asp-controller="Worker" asp-action="Dashboard"><i class="fa-solid fa-server me-2"></i>Switch to System Worker UI</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="m-0">
-                                <button type="submit" class="dropdown-item text-danger">
-                                    <i class="fa-solid fa-right-from-bracket me-2"></i>Logout
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <span class="badge bg-primary mb-1">ADMIN PANEL &bull; FULL PRIVILEGES</span>
+            <h3 class="fw-bold m-0">Security Administrator Control Center</h3>
+            <span class="text-muted small">Signed in as <strong>@fullName</strong> &mdash; Upload logs, manage firewall blocks, and inspect server analysis</span>
         </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-3 col-lg-2 px-0 sidebar d-none d-md-block">
-                <div class="py-3">
-                    <div class="px-3 mb-3 text-muted text-uppercase fs-7 fw-bold">Main Dashboard</div>
-                    <ul class="nav nav-pills flex-column mb-auto">
-                        <li class="nav-item">
-                            <a asp-controller="Admin" asp-action="Dashboard" class="nav-link text-white active">
-                                <i class="fa-solid fa-chart-line me-2"></i> Threat Telemetry
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-controller="Worker" asp-action="Dashboard" class="nav-link text-white-50">
-                                <i class="fa-solid fa-microchip me-2"></i> Worker Queue
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-controller="Home" asp-action="Index" class="nav-link text-white-50">
-                                <i class="fa-solid fa-house me-2"></i> Landing Page
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4 py-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="fw-bold m-0">Security Analyst Overview</h3>
-                    <button class="btn btn-sm btn-outline-primary" onclick="location.reload()"><i class="fa-solid fa-rotate me-1"></i> Refresh Data</button>
-                </div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-md-3">
-                        <div class="card stat-card border-0 shadow-sm p-3 bg-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-muted small fw-semibold">Total Logs Ingested</span>
-                                    <h4 class="fw-bold my-1">1,450,200</h4>
-                                    <span class="text-success small"><i class="fa-solid fa-arrow-up"></i> 100% Zero-Alloc Span</span>
-                                </div>
-                                <div class="bg-light p-3 rounded text-primary"><i class="fa-solid fa-database fa-lg"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card border-0 shadow-sm p-3 bg-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-muted small fw-semibold">Flagged Threats</span>
-                                    <h4 class="fw-bold my-1 text-danger">3,842</h4>
-                                    <span class="text-danger small"><i class="fa-solid fa-triangle-exclamation"></i> SQLi &amp; Brute Force</span>
-                                </div>
-                                <div class="bg-light p-3 rounded text-danger"><i class="fa-solid fa-shield-virus fa-lg"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card border-0 shadow-sm p-3 bg-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-muted small fw-semibold">Avg Parse Throughput</span>
-                                    <h4 class="fw-bold my-1">420,000 <span class="fs-6 fw-normal text-muted">lines/sec</span></h4>
-                                    <span class="text-info small"><i class="fa-solid fa-gauge-high"></i> High Speed</span>
-                                </div>
-                                <div class="bg-light p-3 rounded text-info"><i class="fa-solid fa-bolt fa-lg"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card stat-card border-0 shadow-sm p-3 bg-white">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-muted small fw-semibold">SignalR WebSocket</span>
-                                    <h4 class="fw-bold my-1 text-success">CONNECTED</h4>
-                                    <span class="text-muted small">Port 5001 / Hub</span>
-                                </div>
-                                <div class="bg-light p-3 rounded text-success"><i class="fa-solid fa-wifi fa-lg"></i></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="fw-bold mb-3"><i class="fa-solid fa-file-arrow-up me-2 text-primary"></i>Ingest Raw Log File (Apache / Nginx)</h5>
-                        <div class="upload-zone text-center p-4" onclick="document.getElementById('logInput').click()">
-                            <i class="fa-solid fa-cloud-arrow-up fa-2x text-muted mb-2"></i>
-                            <p class="mb-1 fw-semibold">Click to browse or drag and drop <code>access.log</code> file here</p>
-                            <span class="text-muted small">Supports streaming parsing up to 2GB log files</span>
-                            <input type="file" id="logInput" class="d-none" onchange="simulateUpload()">
-                        </div>
-                        <div id="progressContainer" class="mt-3 d-none">
-                            <div class="d-flex justify-content-between small fw-semibold mb-1">
-                                <span id="statusText">Streaming file to IHostedService background worker...</span>
-                                <span id="progressPercent">0%</span>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-lg-7">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-header bg-white fw-bold py-3">
-                                Threat Vectors &amp; Anomaly Distribution
-                            </div>
-                            <div class="card-body">
-                                <canvas id="threatChart" height="220"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-5">
-                        <div class="card border-0 shadow-sm h-100">
-                            <div class="card-header bg-white fw-bold py-3">
-                                Real-time SignalR Detection Feed
-                            </div>
-                            <div class="card-body p-0">
-                                <ul class="list-group list-group-flush small" id="liveAlertFeed">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <span class="badge bg-danger me-1">SQLi</span>
-                                            <code>/api/v1/users?id=' OR '1'='1</code>
-                                        </div>
-                                        <span class="text-muted">192.168.1.45</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <span class="badge bg-warning text-dark me-1">401 Spike</span>
-                                            <code>50 failed POST /login attempts</code>
-                                        </div>
-                                        <span class="text-muted">10.0.0.88</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <span class="badge bg-danger me-1">XSS</span>
-                                            <code>GET /search?q=&lt;script&gt;alert(1)&lt;/script&gt;</code>
-                                        </div>
-                                        <span class="text-muted">172.16.0.12</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm mt-4">
-                    <div class="card-header bg-white fw-bold py-3 d-flex justify-content-between align-items-center">
-                        <span>Flagged Threat Log Records</span>
-                        <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-download me-1"></i> Export Data CSV</button>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>Source IP</th>
-                                        <th>HTTP Method</th>
-                                        <th>Target URI</th>
-                                        <th>Threat Classification</th>
-                                        <th>Severity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>2026-11-10 14:22:01</td>
-                                        <td><code>192.168.1.45</code></td>
-                                        <td><span class="badge bg-secondary">GET</span></td>
-                                        <td><code>/products?cat=1 UNION SELECT null,version()--</code></td>
-                                        <td>SQL Injection (SQLi)</td>
-                                        <td><span class="badge bg-danger">HIGH</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>2026-11-10 14:21:44</td>
-                                        <td><code>10.0.0.88</code></td>
-                                        <td><span class="badge bg-primary">POST</span></td>
-                                        <td><code>/auth/login</code> (401 Spike)</td>
-                                        <td>Brute Force Login</td>
-                                        <td><span class="badge bg-warning text-dark">MEDIUM</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>2026-11-10 14:19:30</td>
-                                        <td><code>172.16.0.12</code></td>
-                                        <td><span class="badge bg-secondary">GET</span></td>
-                                        <td><code>/profile?name=&lt;svg/onload=alert(1)&gt;</code></td>
-                                        <td>Cross-Site Scripting (XSS)</td>
-                                        <td><span class="badge bg-danger">HIGH</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </main>
+        <div class="d-flex gap-2">
+            <a asp-controller="Monitor" asp-action="Dashboard" class="btn btn-sm btn-dark">
+                <i class="fa-solid fa-chart-area me-1 text-success"></i> Open Server Monitor View
+            </a>
+            <button type="button" class="btn btn-sm btn-success" id="btnSampleScan">
+                <i class="fa-solid fa-flask me-1"></i> Run Server Attack Scan
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="btnRefreshData">
+                <i class="fa-solid fa-rotate me-1"></i> Refresh 
+            </button>
         </div>
     </div>
 
+    <!-- KPI Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card border-0 shadow-sm p-3 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-semibold">Total Logs Parsed</span>
+                        <h4 class="fw-bold my-1" id="statTotalLines">0</h4>
+                        <span class="text-success small"><i class="fa-solid fa-bolt"></i> Total Analyzed</span>
+                    </div>
+                    <div class="bg-light p-3 rounded text-primary"><i class="fa-solid fa-database fa-lg"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card border-0 shadow-sm p-3 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-semibold">Active Flagged Threats</span>
+                        <h4 class="fw-bold my-1 text-danger" id="statActiveThreats">0</h4>
+                        <span class="text-danger small"><i class="fa-solid fa-triangle-exclamation"></i> Unresolved Alerts</span>
+                    </div>
+                    <div class="bg-light p-3 rounded text-danger"><i class="fa-solid fa-shield-virus fa-lg"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card border-0 shadow-sm p-3 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-semibold">Avg Parse Throughput</span>
+                        <h4 class="fw-bold my-1"><span id="statThroughput">0</span> <span class="fs-6 fw-normal text-muted">lines/s</span></h4>
+                        <span class="text-info small"><i class="fa-solid fa-gauge-high"></i> speed</span>
+                    </div>
+                    <div class="bg-light p-3 rounded text-info"><i class="fa-solid fa-microchip fa-lg"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card border-0 shadow-sm p-3 bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-semibold">Blocked Attacker IPs</span>
+                        <h4 class="fw-bold my-1 text-dark" id="statBlockedIps">0</h4>
+                        <span class="text-muted small">Active Firewall Rules</span>
+                    </div>
+                    <div class="bg-light p-3 rounded text-dark"><i class="fa-solid fa-ban fa-lg"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3"><i class="fa-solid fa-file-arrow-up me-2 text-primary"></i>Ingest Raw Log File</h5>
+            <div class="upload-zone text-center p-4" onclick="document.getElementById('logInput').click()">
+                <i class="fa-solid fa-cloud-arrow-up fa-2x text-primary mb-2"></i>
+                <p class="mb-1 fw-semibold">Click to select an <code>access.log</code> or <code>.txt</code> file to stream &amp; parse</p>
+                <input type="file" id="logInput" class="d-none" accept=".log,.txt">
+            </div>
+            <div id="uploadAlert" class="alert mt-3 mb-0 d-none" role="alert"></div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white fw-bold py-3">
+                    Threat Vectors &amp; Anomaly Distribution
+                </div>
+                <div class="card-body">
+                    <canvas id="threatChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="fa-solid fa-ban text-danger me-1"></i> Firewall Blocked IP Management
+                </div>
+                <div class="card-body">
+                    <form id="blockIpForm" class="row g-2 mb-3">
+                        <div class="col-5">
+                            <input type="text" id="ipInput" class="form-control form-control-sm" placeholder="e.g. 192.168.1.45" required>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" id="reasonInput" class="form-control form-control-sm" placeholder="Reason (SQLi)">
+                        </div>
+                        <div class="col-2">
+                            <button type="submit" class="btn btn-danger btn-sm w-100">Block</button>
+                        </div>
+                    </form>
+                    <ul class="list-group list-group-flush small" id="blockedIpList">
+                        <li class="list-group-item text-muted">Loading blocked IPs...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span class="fw-bold">Flagged Threat Log Records (Admin Controls)</span>
+            <div class="d-flex gap-2">
+                <select id="severityFilter" class="form-select form-select-sm" style="width: 140px;">
+                    <option value="ALL">All Severities</option>
+                    <option value="HIGH">HIGH Only</option>
+                    <option value="MEDIUM">MEDIUM Only</option>
+                </select>
+                <input type="text" id="searchInput" class="form-control form-control-sm" style="width: 220px;" placeholder="Filter IP or URI...">
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Timestamp (UTC)</th>
+                            <th>Source IP</th>
+                            <th>Method</th>
+                            <th>Target URI</th>
+                            <th>Classification</th>
+                            <th>Severity</th>
+                            <th>Admin Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="threatTableBody">
+                        <tr><td colspan="7" class="text-center py-3 text-muted">Loading threat records via ...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parsed File Batches History -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-bold py-3">
+            Ingested Log Batches History
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>File Name</th>
+                            <th>Lines Parsed</th>
+                            <th>Threats Found</th>
+                            <th>Duration</th>
+                            <th>Uploaded By</th>
+                            <th>Delete Batch</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batchTableBody">
+                        <tr><td colspan="6" class="text-center py-3 text-muted">No batches ingested yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        let threatChartInstance = null;
+
+        function loadDashboardData() {
+            const severity = $('#severityFilter').val();
+            const search = $('#searchInput').val();
+
+            $.get('/Monitor/GetAnalysisData', { severity: severity, search: search }, function (data) {
+                $('#statTotalLines').text(data.totalLines.toLocaleString());
+                $('#statActiveThreats').text(data.activeThreats.toLocaleString());
+                $('#statThroughput').text(data.avgThroughput.toLocaleString());
+                $('#statBlockedIps').text(data.blockedIps.length);
+
+                renderChart(data.breakdown);
+                renderThreats(data.threats);
+                renderBatches(data.batches);
+                renderBlockedIps(data.blockedIps);
+            });
+        }
+
+        function renderChart(breakdown) {
+            const labels = breakdown.length > 0 ? breakdown.map(x => x.threatType) : ['No Threats Yet'];
+            const counts = breakdown.length > 0 ? breakdown.map(x => x.count) : [0];
+            const colors = ['#dc3545', '#fd7e14', '#ffc107', '#6f42c1'];
+
             const ctx = document.getElementById('threatChart').getContext('2d');
-            new Chart(ctx, {
+            if (threatChartInstance) {
+                threatChartInstance.destroy();
+            }
+            threatChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['SQL Injection', 'Brute-Force (401)', 'Cross-Site Scripting', 'Directory Traversal'],
+                    labels: labels,
                     datasets: [{
                         label: 'Detected Anomalies',
-                        data: [1820, 1240, 560, 222],
-                        backgroundColor: ['#dc3545', '#ffc107', '#fd7e14', '#6c757d']
+                        data: counts,
+                        backgroundColor: colors
                     }]
                 },
                 options: { responsive: true, plugins: { legend: { display: false } } }
             });
+        }
 
-            function simulateUpload() {
-                const container = document.getElementById('progressContainer');
-                const bar = document.getElementById('progressBar');
-                const percent = document.getElementById('progressPercent');
-                const status = document.getElementById('statusText');
+        function renderThreats(threats) {
+            const tbody = $('#threatTableBody');
+            tbody.empty();
 
-                container.classList.remove('d-none');
-                let val = 0;
-                const timer = setInterval(() => {
-                    val += 20;
-                    bar.style.width = val + '%';
-                    percent.innerText = val + '%';
-                    if (val >= 100) {
-                        clearInterval(timer);
-                        status.innerText = "Parsing complete! 1,200 records processed.";
-                        bar.classList.remove('progress-bar-animated');
-                        bar.classList.add('bg-success');
-                    }
-                }, 300);
+            if (!threats || threats.length === 0) {
+                tbody.append('<tr><td colspan="7" class="text-center py-3 text-muted">No threat records found. Upload a .log file or click "Run Server Attack Scan" above.</td></tr>');
+                return;
             }
+
+            threats.forEach(t => {
+                const sevBadge = t.severity === 'HIGH' ? 'bg-danger' : 'bg-warning text-dark';
+                const statusBtn = t.isResolved
+                    ? '<span class="badge bg-success"><i class="fa-solid fa-check"></i> Resolved</span>'
+                    : `<button class="btn btn-outline-success btn-sm me-1" onclick="resolveThreat(${t.id})">Resolve</button>
+                       <button class="btn btn-outline-danger btn-sm" onclick="quickBlockIp('${t.sourceIp}', '${t.threatType}')">Block IP</button>`;
+
+                tbody.append(`
+                    <tr>
+                        <td class="small">${new Date(t.timestamp).toLocaleString()}</td>
+                        <td><code>${escapeHtml(t.sourceIp)}</code></td>
+                        <td><span class="badge bg-secondary">${escapeHtml(t.httpMethod)}</span></td>
+                        <td><code>${escapeHtml(t.targetUri)}</code></td>
+                        <td>${escapeHtml(t.threatType)}</td>
+                        <td><span class="badge ${sevBadge}">${escapeHtml(t.severity)}</span></td>
+                        <td>${statusBtn}</td>
+                    </tr>
+                `);
+            });
+        }
+
+        function renderBatches(batches) {
+            const tbody = $('#batchTableBody');
+            tbody.empty();
+
+            if (!batches || batches.length === 0) {
+                tbody.append('<tr><td colspan="6" class="text-center py-3 text-muted">No batches ingested yet.</td></tr>');
+                return;
+            }
+
+            batches.forEach(b => {
+                tbody.append(`
+                    <tr>
+                        <td class="fw-semibold">${escapeHtml(b.fileName)}</td>
+                        <td>${b.totalLinesParsed.toLocaleString()}</td>
+                        <td><span class="badge bg-danger">${b.threatsDetected}</span></td>
+                        <td>${b.parseDurationMs} ms</td>
+                        <td class="small text-muted">${escapeHtml(b.uploadedByEmail)}</td>
+                        <td>
+                            <button class="btn btn-outline-danger btn-sm" onclick="deleteBatch(${b.id})">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        function renderBlockedIps(ips) {
+            const list = $('#blockedIpList');
+            list.empty();
+
+            if (!ips || ips.length === 0) {
+                list.append('<li class="list-group-item text-muted">No IPs blocked yet.</li>');
+                return;
+            }
+
+            ips.forEach(item => {
+                list.append(`
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <code class="fw-bold text-danger">${escapeHtml(item.ipAddress)}</code>
+                            <span class="text-muted ms-2">${escapeHtml(item.reason)}</span>
+                        </div>
+                        <button class="btn btn-sm btn-link text-secondary p-0" onclick="unblockIp(${item.id})">Unblock</button>
+                    </li>
+                `);
+            });
+        }
+
+        $('#logInput').on('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('logFile', file);
+
+            const alertBox = $('#uploadAlert');
+            alertBox.removeClass('d-none alert-success alert-danger').addClass('alert-info')
+                .text('Streaming file ...');
+
+            $.ajax({
+                url: '/Admin/UploadLogFile',
+                type: '',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    alertBox.removeClass('alert-info').addClass('alert-success').text(res.message);
+                    $('#logInput').val('');
+                    loadDashboardData();
+                },
+                error: function (xhr) {
+                    const msg = xhr.responseJSON?.message || 'Error uploading file.';
+                    alertBox.removeClass('alert-info').addClass('alert-danger').text(msg);
+                }
+            });
+        });
+
+        $('#btnSampleScan').on('click', function () {
+            $.post('/Admin/RunSampleScan', function (res) {
+                $('#uploadAlert').removeClass('d-none alert-danger alert-info').addClass('alert-success').text(res.message);
+                loadDashboardData();
+            });
+        });
+
+        function resolveThreat(id) {
+            $.post('/Admin/ResolveThreat', { id: id }, loadDashboardData);
+        }
+
+        function quickBlockIp(ip, reason) {
+            $.post('/Admin/BlockIp', { ipAddress: ip, reason: reason }, loadDashboardData);
+        }
+
+        $('#blockIpForm').on('submit', function (e) {
+            e.preventDefault();
+            $.post('/Admin/BlockIp', { ipAddress: $('#ipInput').val(), reason: $('#reasonInput').val() }, function () {
+                $('#ipInput').val('');
+                $('#reasonInput').val('');
+                loadDashboardData();
+            });
+        });
+
+        function unblockIp(id) {
+            $.post('/Admin/UnblockIp', { id: id }, loadDashboardData);
+        }
+
+        function deleteBatch(id) {
+            $.post('/Admin/DeleteBatch', { id: id }, loadDashboardData);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return $('<div>').text(text).html();
+        }
+
+        $('#btnRefreshData').on('click', loadDashboardData);
+        $('#severityFilter').on('change', loadDashboardData);
+        $('#searchInput').on('keyup', loadDashboardData);
+
+        $(document).ready(loadDashboardData);
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+}

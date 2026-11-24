@@ -26,12 +26,12 @@ namespace LogDetector.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [Display(Name = "Target User Role")]
+            [Display(Name = "Portal Access Role")]
             public string SelectedRole { get; set; } = "Admin";
 
             [Required]
             [EmailAddress]
-            [Display(Name = "Email / Username")]
+            [Display(Name = "Email Address")]
             public string Email { get; set; } = string.Empty;
 
             [Required]
@@ -65,7 +65,7 @@ namespace LogDetector.Areas.Identity.Pages.Account
 
             if (!await _userManager.IsInRoleAsync(user, Input.SelectedRole))
             {
-                ModelState.AddModelError(string.Empty, $"This account is not assigned the '{Input.SelectedRole}' role.");
+                ModelState.AddModelError(string.Empty, $"This account does not have '{Input.SelectedRole}' access.");
                 return Page();
             }
 
@@ -82,8 +82,8 @@ namespace LogDetector.Areas.Identity.Pages.Account
                     return LocalRedirect(returnUrl);
                 }
 
-                return Input.SelectedRole == "Worker"
-                    ? RedirectToAction("Dashboard", "Worker")
+                return Input.SelectedRole == "Viewer"
+                    ? RedirectToAction("Dashboard", "Monitor")
                     : RedirectToAction("Dashboard", "Admin");
             }
 

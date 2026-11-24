@@ -39,11 +39,11 @@ namespace LogDetector.Areas.Identity.Pages.Account
 
             [Required]
             [EmailAddress]
-            [Display(Name = "Work Email")]
+            [Display(Name = "Email Address")]
             public string Email { get; set; } = string.Empty;
 
             [Required]
-            [Display(Name = "Assigned System Role")]
+            [Display(Name = "Account Access Level")]
             public string Role { get; set; } = "Admin";
 
             [Required]
@@ -69,7 +69,7 @@ namespace LogDetector.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            var targetRole = Input.Role == "Worker" ? "Worker" : "Admin";
+            var targetRole = Input.Role == "Viewer" ? "Viewer" : "Admin";
 
             if (!await _roleManager.RoleExistsAsync(targetRole))
             {
@@ -91,8 +91,8 @@ namespace LogDetector.Areas.Identity.Pages.Account
                 await _userManager.AddToRoleAsync(user, targetRole);
                 await _signInManager.SignInAsync(user, isPersistent: false);
 
-                return targetRole == "Worker"
-                    ? RedirectToAction("Dashboard", "Worker")
+                return targetRole == "Viewer"
+                    ? RedirectToAction("Dashboard", "Monitor")
                     : RedirectToAction("Dashboard", "Admin");
             }
 

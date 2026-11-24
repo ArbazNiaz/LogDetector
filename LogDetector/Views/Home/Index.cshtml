@@ -1,4 +1,5 @@
-﻿@{
+@{
+    Layout = "_Layout";
     ViewData["Title"] = "High-Performance Log Analysis";
 }
 
@@ -6,11 +7,11 @@
     <div class="container">
         <h1 class="display-4 fw-bold mb-3">High-Performance Security Log Parser</h1>
         <p class="lead col-lg-8 mx-auto text-light opacity-75">
-            Stream and analyze millions of raw HTTP access logs in real-time. Detect SQL injection, XSS attempts, and brute-force spikes with zero-allocation C# memory parsing.
+            Ingest, parse, and monitor HTTP access logs in real time. Built with role-separated access for Security Administrators and Read-Only Log Viewers using C# <code>ReadOnlySpan&lt;char&gt;</code>, Dapper repositories, and jQuery AJAX.
         </p>
         <div class="mt-4">
-            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg me-2">Get Started</a>
-            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-lg">Live Demo Login</a>
+            <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg me-2">Create Account</a>
+            <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-light btn-lg">Portal Sign In</a>
         </div>
     </div>
 </header>
@@ -18,29 +19,29 @@
 <section id="features" class="py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Key Project Features</h2>
-            <p class="text-muted">Designed for high-throughput threat detection without overwhelming server RAM.</p>
+            <h2 class="fw-bold">Role-Separated Security Architecture</h2>
+            <p class="text-muted">Clear separation between administrative ingestion controls and read-only server log monitoring.</p>
         </div>
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm text-center p-4">
-                    <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
-                    <h5 class="fw-bold">Zero-Allocation Parsing</h5>
-                    <p class="text-muted small">Utilizes C# <code>ReadOnlySpan&lt;char&gt;</code> to parse text without instantiating string objects for every log entry.</p>
+                    <div class="feature-icon"><i class="fa-solid fa-user-lock"></i></div>
+                    <h5 class="fw-bold">Admin Panel (<code>Admin</code>)</h5>
+                    <p class="text-muted small">Full privileges to upload raw <code>.log</code> files via <code>$.ajax</code>, run threat scans, block attacker IPs, resolve alerts, and inspect every page.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm text-center p-4">
-                    <div class="feature-icon"><i class="fa-solid fa-satellite-dish"></i></div>
-                    <h5 class="fw-bold">Real-Time Telemetry</h5>
-                    <p class="text-muted small">Integrated with ASP.NET Core SignalR WebSockets to stream processing progress and anomaly alerts live.</p>
+                    <div class="feature-icon"><i class="fa-solid fa-eye"></i></div>
+                    <h5 class="fw-bold">Server Monitor (<code>Viewer</code>)</h5>
+                    <p class="text-muted small">Dedicated read-only portal to inspect live server log analysis, Chart.js threat vectors, and backend parser telemetry via <code>$.get</code>.</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card h-100 border-0 shadow-sm text-center p-4">
-                    <div class="feature-icon"><i class="fa-solid fa-user-shield"></i></div>
-                    <h5 class="fw-bold">Threat Pattern Matching</h5>
-                    <p class="text-muted small">Automated inspection for suspicious URI parameters, SQL injection vectors, and aggregated HTTP 401 login spikes.</p>
+                    <div class="feature-icon"><i class="fa-solid fa-database"></i></div>
+                    <h5 class="fw-bold">Dapper + 4 Repositories</h5>
+                    <p class="text-muted small">Four decoupled repository interfaces injected via DI execute parameterized SQL queries against SQL Server.</p>
                 </div>
             </div>
         </div>

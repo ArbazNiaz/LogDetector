@@ -12,18 +12,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-            body {
-                background-color: #f8fafc;
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh;
-            }
-
-            .login-card {
-                max-width: 420px;
-                width: 100%;
-                margin: auto;
-            }
+        body { background-color: #f8fafc; display: flex; flex-direction: column; min-height: 100vh; }
+        .login-card { max-width: 420px; width: 100%; margin: auto; }
     </style>
 </head>
 <body>
@@ -47,7 +37,7 @@
                         <i class="fa-solid fa-lock fa-lg"></i>
                     </div>
                     <h4 class="fw-bold">Sign In</h4>
-                    <p class="text-muted small">Select your role to access the workspace</p>
+                    <p class="text-muted small">Choose your portal access level to continue</p>
                 </div>
 
                 <form method="post">
@@ -55,9 +45,9 @@
 
                     <div class="mb-3">
                         <label asp-for="Input.SelectedRole" class="form-label small fw-semibold"></label>
-                        <select asp-for="Input.SelectedRole" class="form-select" id="userRoleSelect">
-                            <option value="Admin">Security Analyst / Administrator</option>
-                            <option value="Worker">Background Worker (System Monitor)</option>
+                        <select asp-for="Input.SelectedRole" class="form-select">
+                            <option value="Admin">Security Administrator (Admin Panel)</option>
+                            <option value="Viewer">Log Monitor / Viewer (Read-Only Analysis)</option>
                         </select>
                         <span asp-validation-for="Input.SelectedRole" class="text-danger small"></span>
                     </div>
@@ -85,7 +75,6 @@
                             <input asp-for="Input.RememberMe" class="form-check-input" />
                             <label asp-for="Input.RememberMe" class="form-check-label small"></label>
                         </div>
-                        <a href="#" class="small text-decoration-none">Forgot password?</a>
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 mb-3 fw-semibold">

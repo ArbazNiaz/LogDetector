@@ -1,0 +1,213 @@
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Server Log Monitor";
+    string fullName = ViewBag.FullName as string ?? "Log Viewer";
+}
+
+@section Styles {
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; }
+        .card-dark { background-color: #1e293b; border: 1px solid #334155; color: #f8fafc; }
+        .table-dark-custom { color: #e2e8f0; }
+    </style>
+}
+
+<div class="container-fluid px-lg-4 py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <span class="badge bg-success mb-1">READ-ONLY MONITOR &bull; LIVE SERVER ANALYSIS</span>
+            <h3 class="fw-bold m-0 text-white">Server Log Analysis &amp; Engine Monitor</h3>
+            <p class="text-secondary small mb-0">Observer: <strong>@fullName</strong> &mdash; Real-time visibility into server threat detections </p>
+        </div>
+        <div class="d-flex gap-2">
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-sm btn-primary">
+                    <i class="fa-solid fa-sliders me-1"></i> Back to Admin Panel
+                </a>
+            }
+            <button type="button" class="btn btn-sm btn-outline-info" id="btnRefreshMonitor">
+                <i class="fa-solid fa-rotate me-1"></i> Refresh Live Feed
+            </button>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card card-dark p-3">
+                <span class="text-secondary small">Total Streamed Server Logs</span>
+                <h4 class="fw-bold text-success my-1" id="monTotalLines">0</h4>
+                <small class="text-secondary">Zero-Allocation;</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-dark p-3">
+                <span class="text-secondary small">Unresolved Server Threats</span>
+                <h4 class="fw-bold text-danger my-1" id="monActiveThreats">0</h4>
+                <small class="text-secondary">Flagged Anomalies</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-dark p-3">
+                <span class="text-secondary small">Parser Throughput</span>
+                <h4 class="fw-bold text-info my-1"><span id="monThroughput">0</span> lines/s</h4>
+                <small class="text-secondary">Speed</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-dark p-3">
+                <span class="text-secondary small">Active Blocked IPs</span>
+                <h4 class="fw-bold text-warning my-1" id="monBlockedIps">0</h4>
+                <small class="text-secondary">Enforced by Admin</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart + Server Engine Console -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-5">
+            <div class="card card-dark h-100">
+                <div class="card-header bg-dark border-bottom border-secondary fw-bold py-3">
+                    Server Threat Vector Breakdown
+                </div>
+                <div class="card-body">
+                    <canvas id="monitorThreatChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card card-dark h-100">
+                <div class="card-header bg-dark d-flex justify-content-between align-items-center border-bottom border-secondary py-3">
+                    <span class="font-monospace small"><i class="fa-solid fa-terminal me-2 text-success"></i>Automated Log Parser Execution Stream (Read-Only)</span>
+                    <span class="badge bg-success">ENGINE ONLINE</span>
+                </div>
+                <div class="card-body font-monospace small bg-black text-light p-3" id="serverConsoleOutput" style="height: 260px; overflow-y: auto;">
+                    <p class="mb-1 text-secondary">Fetching server parser logs via </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Read-Only Flagged Threats Table -->
+    <div class="card card-dark">
+        <div class="card-header bg-dark border-bottom border-secondary py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span class="fw-bold">Detected Server Threats (Read-Only Analysis)</span>
+            <div class="d-flex gap-2">
+                <select id="monSeverityFilter" class="form-select form-select-sm bg-dark text-white border-secondary" style="width: 140px;">
+                    <option value="ALL">All Severities</option>
+                    <option value="HIGH">HIGH Only</option>
+                    <option value="MEDIUM">MEDIUM Only</option>
+                </select>
+                <input type="text" id="monSearchInput" class="form-control form-control-sm bg-dark text-white border-secondary" style="width: 220px;" placeholder="Search IP or URI...">
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0 table-dark-custom">
+                    <thead>
+                        <tr>
+                            <th>Timestamp (UTC)</th>
+                            <th>Source IP</th>
+                            <th>Method</th>
+                            <th>Target URI</th>
+                            <th>Classification</th>
+                            <th>Severity</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monThreatTableBody">
+                        <tr><td colspan="7" class="text-center py-3 text-secondary">Loading analysis data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let monChartInstance = null;
+
+        function loadMonitorData() {
+            const severity = $('#monSeverityFilter').val();
+            const search = $('#monSearchInput').val();
+
+            $.get('/Monitor/GetAnalysisData', { severity: severity, search: search }, function (data) {
+                $('#monTotalLines').text(data.totalLines.toLocaleString());
+                $('#monActiveThreats').text(data.activeThreats.toLocaleString());
+                $('#monThroughput').text(data.avgThroughput.toLocaleString());
+                $('#monBlockedIps').text(data.blockedIps.length);
+
+                const labels = data.breakdown.length > 0 ? data.breakdown.map(x => x.threatType) : ['No Threats Yet'];
+                const counts = data.breakdown.length > 0 ? data.breakdown.map(x => x.count) : [0];
+                const ctx = document.getElementById('monitorThreatChart').getContext('2d');
+                if (monChartInstance) monChartInstance.destroy();
+                monChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: counts,
+                            backgroundColor: ['#ef4444', '#f97316', '#eab308', '#8b5cf6'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { labels: { color: '#e2e8f0' } } }
+                    }
+                });
+
+                const consoleBox = $('#serverConsoleOutput');
+                consoleBox.empty();
+                if (!data.telemetry || data.telemetry.length === 0) {
+                    consoleBox.append('<p class="mb-1 text-secondary">[INF] Waiting for Admin to ingest log files...</p>');
+                } else {
+                    data.telemetry.forEach(log => {
+                        const color = log.eventLevel === 'WRN' ? 'text-warning' : 'text-info';
+                        const time = new Date(log.createdAt).toLocaleTimeString();
+                        consoleBox.append(`<p class="mb-1 ${color}">[${time} ${log.eventLevel}] ${escapeHtml(log.message)}</p>`);
+                    });
+                }
+
+                const tbody = $('#monThreatTableBody');
+                tbody.empty();
+                if (!data.threats || data.threats.length === 0) {
+                    tbody.append('<tr><td colspan="7" class="text-center py-3 text-secondary">No threat records recorded yet.</td></tr>');
+                } else {
+                    data.threats.forEach(t => {
+                        const sevBadge = t.severity === 'HIGH' ? 'bg-danger' : 'bg-warning text-dark';
+                        const stateBadge = t.isResolved
+                            ? '<span class="badge bg-success">Resolved by Admin</span>'
+                            : '<span class="badge bg-outline-danger border border-danger text-danger">Active Alert</span>';
+
+                        tbody.append(`
+                            <tr>
+                                <td class="small">${new Date(t.timestamp).toLocaleString()}</td>
+                                <td><code>${escapeHtml(t.sourceIp)}</code></td>
+                                <td><span class="badge bg-secondary">${escapeHtml(t.httpMethod)}</span></td>
+                                <td><code>${escapeHtml(t.targetUri)}</code></td>
+                                <td>${escapeHtml(t.threatType)}</td>
+                                <td><span class="badge ${sevBadge}">${escapeHtml(t.severity)}</span></td>
+                                <td>${stateBadge}</td>
+                            </tr>
+                        `);
+                    });
+                }
+            });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return $('<div>').text(text).html();
+        }
+
+        $('#btnRefreshMonitor').on('click', loadMonitorData);
+        $('#monSeverityFilter').on('change', loadMonitorData);
+        $('#monSearchInput').on('keyup', loadMonitorData);
+
+        $(document).ready(loadMonitorData);
+    </script>
+}
